@@ -84,7 +84,10 @@ VectorTilesGenerator.prototype.get = function(queries, opts) {
     .then(function(queryResultsRows){
       return self.queryResultsToGeoJSON(queryResultsRows)
       .then(function(geojson){
-        var govt = geojsonvt(geojson);
+        var govt = geojsonvt(geojson, {
+          maxZoom: opts.z+1,
+          indexMaxZoom: opts.z-1
+        });
         var pbf = govt.getTile(opts.z, opts.x, opts.y);
         return {
           name: key,
