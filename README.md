@@ -2,19 +2,16 @@
 
 ## installation
 ```
-vector-tiles-generator
+yarn add vector-tiles-generator
 ```
 
 ## usage with express
-```
+```JavaScript
 var VectorTileGenerator = require('vector-tiles-generator');
 
-//initialize once your generator
-//you must provide your own pg-pool
-
+// initialize once your generator
 var vectorTileGenerator = new VectorTileGenerator({
-  pgPool: pool,
-  cache: '//TODO'
+  pgPool: pool // you must provide your own pg-pool
 });
 
 app.get('/layer/:z/:x/:y.mvt', function(req, res) {
@@ -24,18 +21,18 @@ app.get('/layer/:z/:x/:y.mvt', function(req, res) {
     z: parseInt(req.params.z)
   };
 
-  //nothing before zoom level 9
+  // nothing before zoom level 9
   if(tile.z < 9) {
-    return res.status(204).send();  //204 empty status for mapbox
+    return res.status(204).send();  // 204 empty status for mapbox
   }
 
   return vectorTileGenerator.get({
     points: `SELECT name, ST_AsGeoJSON(ST_Transform(way, 4326)) as the_geom_geojson
-              FROM planet_osm_polygon WHERE way && !bbox!`  //!bbox! will be replaced
+              FROM planet_osm_polygon WHERE way && !bbox!`  // !bbox! will be replaced
   }, tile)
   .then(function(result) {
     if(!result || result.length === 0) {
-      return res.status(204).send();  //handle empty status for mapbox
+      return res.status(204).send();  // handle empty status for mapbox
     }
     return res.send(result);
   });
