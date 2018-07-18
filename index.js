@@ -42,7 +42,7 @@ VectorTilesGenerator.prototype.performQuery = function(sql, tile) {
   //actually performing query
   return this.pgPool.connect()
     .then(function(client) {
-      return client.query(sql, tile)
+      return client.query(sql)
         .then(function(result){
           client.release();
           return result.rows;
